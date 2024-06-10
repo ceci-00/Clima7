@@ -25,10 +25,20 @@ const saveCity = (city) => {
 const renderCityHistory = () => {
     document.getElementById("city-history").innerHTML = "";
     for (let i = 0; i < cityHistory.length; i++) {
-        const cityEl = document.createElement("button");
-        cityEl.innerHTML = cityHistory[i];
-        cityEl.addEventListener("click", () => getWeather(cityHistory[i]));
-        document.getElementById("city-history").append(cityEl);
+        const cityName = cityHistory[i].trim(); // Trim any leading/trailing whitespace
+        if (cityName !== "") { // Check if the city name is not an empty string
+            const cityEl = document.createElement("button");
+            cityEl.innerHTML = cityName;
+            cityEl.addEventListener("click", () => getWeather(cityName));
+            cityEl.style.width = "100%";
+            cityEl.style.backgroundColor = "#6c757d";
+            cityEl.style.color = "#fff";
+            cityEl.style.padding = "0.5rem";
+            cityEl.style.borderRadius = "0.25rem";
+            cityEl.style.fontSize = "1rem";
+            cityEl.classList.add("mb-2");
+            document.getElementById("city-history").append(cityEl);
+        }
     }
 }
 
@@ -65,22 +75,34 @@ const getForecast = async (lat, lon) => {
     console.log(data);
     let forecast = data.list;
 
+    // Clear the previous forecast data
+    document.getElementById("forecast-container").innerHTML = "";
+
     for (let i = 3; i < forecast.length; i += 8) {
-        const dateEl = document.createElement("p");
+        const cardEl = document.createElement("div");
+        const cardBodyEl = document.createElement("div");
+        const dateEl = document.createElement("h5");
+        const iconEl = document.createElement("img");
         const tempEl = document.createElement("p");
         const humEl = document.createElement("p");
         const windEl = document.createElement("p");
-        const iconEl = document.createElement("img");
-        const divEl = document.createElement("div");
 
+        cardEl.classList.add("card", "bg-secondary", "text-white", "mb-3", "col-12", "col-sm-6", "col-md-4", "col-lg-2", "mx-auto"); // Add the mx-auto class
+        cardBodyEl.classList.add("card-body");
+        dateEl.classList.add("card-title");
         dateEl.innerHTML = dayjs.unix(forecast[i].dt).format("MM/DD/YYYY");
+        tempEl.classList.add("card-text");
         tempEl.innerHTML = forecast[i].main.temp + "°F";
-        humEl.innerHTML = forecast[i].main.humidity + "%";
-        windEl.innerHTML = forecast[i].wind.speed + " mph";
+        humEl.classList.add("card-text");
+        humEl.innerHTML = "Humidity: " + forecast[i].main.humidity + "%";
+        windEl.classList.add("card-text");
+        windEl.innerHTML = "Wind: " + forecast[i].wind.speed + " mph";
         iconEl.src = `https://openweathermap.org/img/w/${forecast[i].weather[0].icon}.png`;
         iconEl.alt = forecast[i].weather[0].description;
-        divEl.append(dateEl, iconEl, tempEl, humEl, windEl);
-        document.getElementById("forecast-container").append(divEl);
+
+        cardBodyEl.append(dateEl, iconEl, tempEl, humEl, windEl);
+        cardEl.append(cardBodyEl);
+        document.getElementById("forecast-container").append(cardEl);
     }
 }
 
