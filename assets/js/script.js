@@ -34,6 +34,32 @@ const getWeather = async (city) => {
     getForecast(data.coord.lat, data.coord.lon);
     }
 
+const getForecast = async (lat, lon) => {
+    const apiUrlForecast = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${APIKey}`;
+    const response = await fetch(apiUrlForecast);
+    const data = await response.json();
+    console.log(data);
+    let forecast = data.list;
+
+    for (let i = 3; i < forecast.length; i += 8) {
+        const dateEl = document.createElement("p");
+        const tempEl = document.createElement("p");
+        const humEl = document.createElement("p");
+        const windEl = document.createElement("p");
+        const iconEl = document.createElement("img");
+        const divEl = document.createElement("div");
+
+        dateEl.innerHTML = dayjs.unix(forecast[i].dt).format("MM/DD/YYYY");
+        tempEl.innerHTML = forecast[i].main.temp + "°F";
+        humEl.innerHTML = forecast[i].main.humidity + "%";
+        windEl.innerHTML = forecast[i].wind.speed + " mph";
+        iconEl.src = `https://openweathermap.org/img/w/${forecast[i].weather[0].icon}.png`;
+        iconEl.alt = forecast[i].weather[0].description;
+        divEl.append(dateEl, iconEl, tempEl, humEl, windEl);
+        document.getElementById("forecast-container").append(divEl);
+    }
+}
+
 const getCity = async () => {
     city = document.getElementById("city").value;
     getWeather(city);
