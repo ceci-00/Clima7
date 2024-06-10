@@ -7,6 +7,8 @@ This dashboard uses the OpenWeatherAPI to retrieve current and forecasted weathe
 
 ## Usage
 
+[View Live URL](https://ceci-00.github.io/Clima7/)
+
 ![dashboardscreenshot](assets/images/dashboard.png)
 
 ## Technologies
