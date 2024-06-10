@@ -10,6 +10,30 @@ let date;
 let name;
 
 
+const cityHistory = JSON.parse(localStorage.getItem("cityHistory")) || [];
+
+const saveCity = (city) => {
+    if (cityHistory.includes(city)) {
+        return;
+    } else {
+        cityHistory.push(city);
+        localStorage.setItem("cityHistory", JSON.stringify(cityHistory));
+        renderCityHistory();
+    }
+}
+
+const renderCityHistory = () => {
+    document.getElementById("city-history").innerHTML = "";
+    for (let i = 0; i < cityHistory.length; i++) {
+        const cityEl = document.createElement("button");
+        cityEl.innerHTML = cityHistory[i];
+        cityEl.addEventListener("click", () => getWeather(cityHistory[i]));
+        document.getElementById("city-history").append(cityEl);
+    }
+}
+
+renderCityHistory();
+
 const getWeather = async (city) => {
     const response = await fetch(
         `${baseURL}${city}&appid=${APIKey}&units=imperial`
@@ -63,7 +87,7 @@ const getForecast = async (lat, lon) => {
 const getCity = async () => {
     city = document.getElementById("city").value;
     getWeather(city);
-
+    saveCity(city);
 }
 
 document.getElementById("submit").addEventListener("click", getCity);
