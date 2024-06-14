@@ -1,6 +1,7 @@
+// use api key and base url to get weather data
 const APIKey = "087e373d130564b08c986c610e841dd0";
 const baseURL = "https://api.openweathermap.org/data/2.5/weather?q=";
-
+// set variables for city, temperature, humidity, wind, weather, date, and name
 let city;
 let temperature;
 let humidity;
@@ -9,9 +10,9 @@ let weather;
 let date;
 let name;
 
-
+// save city search to local storage
 const cityHistory = JSON.parse(localStorage.getItem("cityHistory")) || [];
-
+// function to save city to local storage
 const saveCity = (city) => {
     if (cityHistory.includes(city)) {
         return;
@@ -21,7 +22,7 @@ const saveCity = (city) => {
         renderCityHistory();
     }
 }
-
+// render city history to page in a button
 const renderCityHistory = () => {
     document.getElementById("city-history").innerHTML = "";
     for (let i = 0; i < cityHistory.length; i++) {
@@ -43,7 +44,7 @@ const renderCityHistory = () => {
 }
 
 renderCityHistory();
-
+// get the weather data from the api
 const getWeather = async (city) => {
     const response = await fetch(
         `${baseURL}${city}&appid=${APIKey}&units=imperial`
@@ -58,6 +59,7 @@ const getWeather = async (city) => {
     name = data.name;
     const iconUrl = `https://openweathermap.org/img/w/${data.weather[0].icon}.png`;
     console.log(temperature, date, weather, humidity, wind, name);
+    // dsplay weather data on the page
     document.getElementById("city-name").innerHTML = name;
     document.getElementById("date").innerHTML = dayjs.unix(date).format("MM/DD/YYYY");
     document.getElementById("temp").innerHTML = temperature+"°F";
@@ -67,7 +69,7 @@ const getWeather = async (city) => {
     document.getElementById("icon").alt = weather;
     getForecast(data.coord.lat, data.coord.lon);
     }
-
+// get the forecast data from the api
 const getForecast = async (lat, lon) => {
     const apiUrlForecast = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${APIKey}`;
     const response = await fetch(apiUrlForecast);
@@ -77,7 +79,7 @@ const getForecast = async (lat, lon) => {
 
     // Clear the previous forecast data
     document.getElementById("forecast-container").innerHTML = "";
-
+// display the forecast data on the page
     for (let i = 3; i < forecast.length; i += 8) {
         const cardEl = document.createElement("div");
         const cardBodyEl = document.createElement("div");
@@ -86,7 +88,7 @@ const getForecast = async (lat, lon) => {
         const tempEl = document.createElement("p");
         const humEl = document.createElement("p");
         const windEl = document.createElement("p");
-
+        // displaying data in a card
         cardEl.classList.add("card", "bg-secondary", "text-white", "mb-3", "col-12", "col-sm-6", "col-md-4", "col-lg-2", "mx-auto"); // Add the mx-auto class
         cardBodyEl.classList.add("card-body");
         dateEl.classList.add("card-title");
@@ -105,11 +107,11 @@ const getForecast = async (lat, lon) => {
         document.getElementById("forecast-container").append(cardEl);
     }
 }
-
+// get the city from the input
 const getCity = async () => {
     city = document.getElementById("city").value;
     getWeather(city);
     saveCity(city);
 }
-
+// event listener for the submit button
 document.getElementById("submit").addEventListener("click", getCity);
